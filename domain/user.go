@@ -4,7 +4,7 @@ type User struct {
 	ID       uint
 	Name     string
 	Email    string
-	Password string
+	Password int
 }
 
 type UserRepository interface {
