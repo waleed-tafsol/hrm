@@ -89,6 +89,14 @@ docs:
 install-swagger:
 	go install github.com/swaggo/swag/cmd/swag@latest
 
+# Generate Postman collection
+postman:
+	$(GOCMD) run cmd/postman-generator/main.go
+
+# Test API endpoints
+test-api:
+	./scripts/test-api.sh
+
 # Database migrations
 migrate-up:
 	# Add your migration command here
@@ -121,8 +129,10 @@ help:
 	@echo "  fmt          - Format code"
 	@echo "  lint         - Run linter"
 	@echo "  docs         - Generate API documentation"
+	@echo "  postman      - Generate Postman collection"
+	@echo "  test-api     - Test API endpoints"
 	@echo "  docker-build - Build Docker image"
 	@echo "  docker-run   - Run Docker container"
 	@echo "  help         - Show this help"
 
-.PHONY: all build build-all clean run dev deps test test-coverage test-race bench fmt lint docs docker-build docker-run help 
+.PHONY: all build build-all clean run dev deps test test-coverage test-race bench fmt lint docs postman test-api docker-build docker-run help 
