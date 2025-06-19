@@ -1,0 +1,89 @@
+run:
+  timeout: 5m
+  go: "1.24"
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - gofmt
+    - goimports
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - misspell
+    - gosec
+    - prealloc
+    - gocritic
+    - revive
+    - gocyclo
+    - dupl
+    - goconst
+    - gomnd
+    - lll
+    - nakedret
+    - noctx
+    - paralleltest
+    - tagliatelle
+    - tparallel
+    - wastedassign
+    - whitespace
+    - wrapcheck
+    - wsl
+
+  disable:
+    - gomnd # Magic numbers are sometimes acceptable
+    - lll # Line length limit can be too strict
+    - gocyclo # Cyclomatic complexity can be acceptable for complex business logic
+
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport # Sometimes needed for different contexts
+      - ifElseChain # Can be more readable than switch in some cases
+      - octalLiteral # Sometimes needed for file permissions
+      - whyNoLint # Can be useful for documentation
+
+  gocyclo:
+    min-complexity: 15
+
+  dupl:
+    threshold: 100
+
+  lll:
+    line-length: 140
+
+  misspell:
+    locale: US
+
+  gomnd:
+    checks: argument,case,condition,operation,return,assign
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gomnd
+        - gocyclo
+        - dupl
+        - goconst
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: false
+
+severity:
+  default-severity: error 
