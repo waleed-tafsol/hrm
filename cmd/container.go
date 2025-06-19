@@ -18,9 +18,13 @@ import (
 // - Business logic services
 // - HTTP handlers
 type Container struct {
-	Config      *config.Config                 // Application configuration
-	UserRepo    domain.UserRepositoryInterface // User data access layer
-	UserService domain.UserServiceInterface    // User business logic layer
+	Config            *config.Config                       // Application configuration
+	UserRepo          domain.UserRepositoryInterface       // User data access layer
+	UserService       domain.UserServiceInterface          // User business logic layer
+	AttendanceRepo    domain.AttendanceRepositoryInterface // Attendance data access layer
+	BreakRepo         domain.BreakRepositoryInterface      // Break data access layer
+	AttendanceService domain.AttendanceServiceInterface    // Attendance business logic layer
+	BreakService      domain.BreakServiceInterface         // Break business logic layer
 }
 
 // NewContainer creates and initializes all application dependencies.
@@ -38,16 +42,24 @@ func NewContainer() *Container {
 	// Step 2: Initialize repositories (Data Access Layer)
 	// Repositories handle all database operations and implement domain interfaces
 	userRepo := repository.NewUserRepository(cfg.DB)
+	attendanceRepo := repository.NewAttendanceRepository(cfg.DB)
+	breakRepo := repository.NewBreakRepository(cfg.DB)
 
 	// Step 3: Initialize services (Business Logic Layer)
 	// Services contain business logic and orchestrate operations between repositories
 	userService := usecase.NewUserService(userRepo)
+	attendanceService := usecase.NewAttendanceService(attendanceRepo, userRepo)
+	breakService := usecase.NewBreakService(breakRepo, attendanceRepo)
 
 	// Step 4: Create and return the container with all dependencies
 	return &Container{
-		Config:      cfg,
-		UserRepo:    userRepo,
-		UserService: userService,
+		Config:            cfg,
+		UserRepo:          userRepo,
+		UserService:       userService,
+		AttendanceRepo:    attendanceRepo,
+		BreakRepo:         breakRepo,
+		AttendanceService: attendanceService,
+		BreakService:      breakService,
 	}
 }
 
@@ -56,6 +68,8 @@ func NewContainer() *Container {
 // to their corresponding handlers. It organizes routes into logical groups:
 // - Health check routes
 // - User management routes
+// - Attendance management routes
+// - Break management routes
 //
 // Parameters:
 //   - router: The Gin router instance to configure
@@ -67,4 +81,12 @@ func (c *Container) SetupRoutes(router *gin.Engine) {
 	// Step 2: Setup user management routes
 	// These routes handle all user-related operations (CRUD, authentication)
 	routes.SetupUserRoutes(router, c.UserService)
+
+	// Step 3: Setup attendance management routes
+	// These routes handle all attendance-related operations (check-in, check-out)
+	routes.SetupAttendanceRoutes(router, c.AttendanceService)
+
+	// Step 4: Setup break management routes
+	// These routes handle all break-related operations (add, end, manage breaks)
+	routes.SetupBreakRoutes(router, c.BreakService)
 }

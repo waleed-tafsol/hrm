@@ -1,0 +1,692 @@
+{
+  "info": {
+    "name": "HRM API Collection",
+    "description": "Complete API collection for HRM (Human Resource Management) system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "2025-06-19T21:10:08+05:00"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/health"
+              ]
+            },
+            "description": "Check if the HRM API is running"
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/health",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/health"
+                  ]
+                },
+                "description": "Check if the HRM API is running"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\"status\":\"ok\",\"message\":\"HRM API is running\"}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securepassword123\",\n  \"phone\": \"+1234567890\",\n  \"department\": \"Engineering\",\n  \"position\": \"Software Engineer\",\n  \"hire_date\": \"2024-01-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/api/v1/auth/register"
+              ]
+            },
+            "description": "Register a new user account"
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securepassword123\",\n  \"phone\": \"+1234567890\",\n  \"department\": \"Engineering\",\n  \"position\": \"Software Engineer\",\n  \"hire_date\": \"2024-01-15\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/auth/register",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/api/v1/auth/register"
+                  ]
+                },
+                "description": "Register a new user account"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User registered successfully\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1,\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+1234567890\",\n      \"department\": \"Engineering\",\n      \"position\": \"Software Engineer\",\n      \"hire_date\": \"2024-01-15T00:00:00Z\",\n      \"created_at\": \"2024-01-15T10:30:00Z\",\n      \"updated_at\": \"2024-01-15T10:30:00Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Sign In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securepassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/signin",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/api/v1/auth/signin"
+              ]
+            },
+            "description": "Sign in with email and password"
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securepassword123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/auth/signin",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/api/v1/auth/signin"
+                  ]
+                },
+                "description": "Sign in with email and password"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User signed in successfully\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1,\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+1234567890\",\n      \"department\": \"Engineering\",\n      \"position\": \"Software Engineer\",\n      \"hire_date\": \"2024-01-15T00:00:00Z\",\n      \"created_at\": \"2024-01-15T10:30:00Z\",\n      \"updated_at\": \"2024-01-15T10:30:00Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/me",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/api/v1/users/me"
+              ]
+            },
+            "description": "Get current user details",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/users/me",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/api/v1/users/me"
+                  ]
+                },
+                "description": "Get current user details",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User details retrieved successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+1234567890\",\n    \"department\": \"Engineering\",\n    \"position\": \"Software Engineer\",\n    \"hire_date\": \"2024-01-15T00:00:00Z\",\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"updated_at\": \"2024-01-15T10:30:00Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/api/v1/users"
+              ]
+            },
+            "description": "Get all users (paginated)",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/users",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/api/v1/users"
+                  ]
+                },
+                "description": "Get all users (paginated)",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Users retrieved successfully\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+1234567890\",\n      \"department\": \"Engineering\",\n      \"position\": \"Software Engineer\",\n      \"hire_date\": \"2024-01-15T00:00:00Z\",\n      \"created_at\": \"2024-01-15T10:30:00Z\",\n      \"updated_at\": \"2024-01-15T10:30:00Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/{{user_id}}",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/api/v1/users/{{user_id}}"
+              ]
+            },
+            "description": "Get user details by ID",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/users/{{user_id}}",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/api/v1/users/{{user_id}}"
+                  ]
+                },
+                "description": "Get user details by ID",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User retrieved successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+1234567890\",\n    \"department\": \"Engineering\",\n    \"position\": \"Software Engineer\",\n    \"hire_date\": \"2024-01-15T00:00:00Z\",\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"updated_at\": \"2024-01-15T10:30:00Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Smith\",\n  \"phone\": \"+1234567890\",\n  \"department\": \"Product\",\n  \"position\": \"Product Manager\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/{{user_id}}",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/api/v1/users/{{user_id}}"
+              ]
+            },
+            "description": "Update user details",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Smith\",\n  \"phone\": \"+1234567890\",\n  \"department\": \"Product\",\n  \"position\": \"Product Manager\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/users/{{user_id}}",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/api/v1/users/{{user_id}}"
+                  ]
+                },
+                "description": "Update user details",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User updated successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+1234567890\",\n    \"department\": \"Product\",\n    \"position\": \"Product Manager\",\n    \"hire_date\": \"2024-01-15T00:00:00Z\",\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"updated_at\": \"2024-01-15T11:00:00Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/{{user_id}}",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "",
+              "path": [
+                "/api/v1/users/{{user_id}}"
+              ]
+            },
+            "description": "Delete a user",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Sample Response",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/users/{{user_id}}",
+                  "protocol": "http",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "port": "",
+                  "path": [
+                    "/api/v1/users/{{user_id}}"
+                  ]
+                },
+                "description": "Delete a user",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "{{auth_token}}",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}

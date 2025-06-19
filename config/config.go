@@ -79,7 +79,7 @@ func connectDB() *gorm.DB {
 
 	// Step 3: Run database migrations for User entity
 	// This will create the users table if it doesn't exist
-	err = db.AutoMigrate(&domain.User{})
+	err = db.AutoMigrate(&domain.User{}, &domain.Attendance{}, &domain.Break{})
 	if err != nil {
 		log.Fatal("Migration failed:", err)
 	}
