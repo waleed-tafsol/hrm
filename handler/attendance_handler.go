@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,7 +27,7 @@ func NewAttendanceHandler(attendanceService domain.AttendanceServiceInterface) *
 }
 
 // CreateAttendance creates a new attendance record
-func (h *AttendanceHandler) CreateAttendance(c *gin.Context) {
+func (attendanceHandler *AttendanceHandler) CreateAttendance(c *gin.Context) {
 	var req request.AttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		BadRequestResponse(c, "Invalid request data: "+err.Error())
@@ -39,18 +40,18 @@ func (h *AttendanceHandler) CreateAttendance(c *gin.Context) {
 		return
 	}
 
-	attendance, err := h.attendanceService.CreateAttendance(userID, req.Date)
+	attendance, err := attendanceHandler.attendanceService.CreateAttendance(userID, req.Date)
 	if err != nil {
 		InternalServerErrorResponse(c, "Failed to create attendance: "+err.Error())
 		return
 	}
 
-	attendanceResp := h.convertToAttendanceResponse(*attendance)
+	attendanceResp := attendanceHandler.convertToAttendanceResponse(*attendance)
 	SuccessResponse(c, http.StatusCreated, "Attendance created successfully", attendanceResp)
 }
 
 // CheckIn handles user check-in
-func (h *AttendanceHandler) CheckIn(c *gin.Context) {
+func (attendanceHandler *AttendanceHandler) CheckIn(c *gin.Context) {
 	var req request.CheckInRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		BadRequestResponse(c, "Invalid request data: "+err.Error())
@@ -63,14 +64,14 @@ func (h *AttendanceHandler) CheckIn(c *gin.Context) {
 		return
 	}
 
-	attendance, err := h.attendanceService.CheckIn(userID, req.Date)
+	attendance, err := attendanceHandler.attendanceService.CheckIn(userID, req.Date)
 	if err != nil {
-		if err == domain.ErrAlreadyCheckedIn {
+		if errors.Is(err, domain.ErrAlreadyCheckedIn) {
 			c.JSON(http.StatusConflict, Response{
 				Success: false,
 				Message: "Already checked in for this date",
 			})
-		} else if err == domain.ErrUserNotFound {
+		} else if errors.Is(err, domain.ErrUserNotFound) {
 			NotFoundResponse(c, "User not found")
 		} else {
 			InternalServerErrorResponse(c, "Failed to check in: "+err.Error())
@@ -78,18 +79,16 @@ func (h *AttendanceHandler) CheckIn(c *gin.Context) {
 		return
 	}
 
-	attendanceResp := h.convertToAttendanceResponse(*attendance)
+	attendanceResp := attendanceHandler.convertToAttendanceResponse(*attendance)
 	checkInResp := response.CheckInResponse{
-		Attendance:  attendanceResp,
-		Message:     "Check-in successful",
-		CheckInTime: *attendance.CheckInTime,
+		Attendance: attendanceResp,
 	}
 
 	SuccessResponse(c, http.StatusOK, "Check-in successful", checkInResp)
 }
 
 // CheckOut handles user check-out
-func (h *AttendanceHandler) CheckOut(c *gin.Context) {
+func (attendanceHandler *AttendanceHandler) CheckOut(c *gin.Context) {
 	var req request.CheckOutRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		BadRequestResponse(c, "Invalid request data: "+err.Error())
@@ -102,16 +101,16 @@ func (h *AttendanceHandler) CheckOut(c *gin.Context) {
 		return
 	}
 
-	attendance, err := h.attendanceService.CheckOut(userID, req.Date)
+	attendance, err := attendanceHandler.attendanceService.CheckOut(userID, req.Date)
 	if err != nil {
-		if err == domain.ErrAlreadyCheckedOut {
+		if errors.Is(err, domain.ErrAlreadyCheckedOut) {
 			c.JSON(http.StatusConflict, Response{
 				Success: false,
 				Message: "Already checked out for this date",
 			})
-		} else if err == domain.ErrNotCheckedIn {
+		} else if errors.Is(err, domain.ErrNotCheckedIn) {
 			BadRequestResponse(c, "Not checked in yet")
-		} else if err == domain.ErrUserNotFound || err == domain.ErrAttendanceNotFound {
+		} else if errors.Is(err, domain.ErrUserNotFound) || errors.Is(err, domain.ErrAttendanceNotFound) {
 			NotFoundResponse(c, "User or attendance not found")
 		} else {
 			InternalServerErrorResponse(c, "Failed to check out: "+err.Error())
@@ -119,19 +118,16 @@ func (h *AttendanceHandler) CheckOut(c *gin.Context) {
 		return
 	}
 
-	attendanceResp := h.convertToAttendanceResponse(*attendance)
+	attendanceResp := attendanceHandler.convertToAttendanceResponse(*attendance)
 	checkOutResp := response.CheckOutResponse{
-		Attendance:     attendanceResp,
-		Message:        "Check-out successful",
-		CheckOutTime:   *attendance.CheckOutTime,
-		TotalWorkHours: attendance.TotalWorkHours,
+		Attendance: attendanceResp,
 	}
 
 	SuccessResponse(c, http.StatusOK, "Check-out successful", checkOutResp)
 }
 
 // GetAttendanceByID retrieves an attendance record by ID
-func (h *AttendanceHandler) GetAttendanceByID(c *gin.Context) {
+func (attendanceHandler *AttendanceHandler) GetAttendanceByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -139,7 +135,7 @@ func (h *AttendanceHandler) GetAttendanceByID(c *gin.Context) {
 		return
 	}
 
-	attendance, err := h.attendanceService.GetAttendanceByID(uint(id))
+	attendance, err := attendanceHandler.attendanceService.GetAttendanceByID(uint(id))
 	if err != nil {
 		if err == domain.ErrAttendanceNotFound {
 			NotFoundResponse(c, "Attendance not found")
@@ -149,12 +145,12 @@ func (h *AttendanceHandler) GetAttendanceByID(c *gin.Context) {
 		return
 	}
 
-	attendanceResp := h.convertToAttendanceResponse(*attendance)
+	attendanceResp := attendanceHandler.convertToAttendanceResponse(*attendance)
 	SuccessResponse(c, http.StatusOK, "Attendance retrieved successfully", attendanceResp)
 }
 
 // GetUserAttendance retrieves attendance for a user on a specific date
-func (h *AttendanceHandler) GetUserAttendance(c *gin.Context) {
+func (attendanceHandler *AttendanceHandler) GetUserAttendance(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	userID, err := strconv.ParseUint(userIDStr, 10, 32)
 	if err != nil {
@@ -173,7 +169,7 @@ func (h *AttendanceHandler) GetUserAttendance(c *gin.Context) {
 		return
 	}
 
-	attendance, err := h.attendanceService.GetUserAttendance(uint(userID), date)
+	attendance, err := attendanceHandler.attendanceService.GetUserAttendance(uint(userID), date)
 	if err != nil {
 		if err == domain.ErrAttendanceNotFound || err == domain.ErrUserNotFound {
 			NotFoundResponse(c, "User or attendance not found")
@@ -183,12 +179,12 @@ func (h *AttendanceHandler) GetUserAttendance(c *gin.Context) {
 		return
 	}
 
-	attendanceResp := h.convertToAttendanceResponse(*attendance)
+	attendanceResp := attendanceHandler.convertToAttendanceResponse(*attendance)
 	SuccessResponse(c, http.StatusOK, "User attendance retrieved successfully", attendanceResp)
 }
 
 // GetUserAttendanceRange retrieves attendance records for a user within a date range
-func (h *AttendanceHandler) GetUserAttendanceRange(c *gin.Context) {
+func (attendanceHandler *AttendanceHandler) GetUserAttendanceRange(c *gin.Context) {
 	var req request.AttendanceRangeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		BadRequestResponse(c, "Invalid request data: "+err.Error())
@@ -201,7 +197,7 @@ func (h *AttendanceHandler) GetUserAttendanceRange(c *gin.Context) {
 		return
 	}
 
-	attendances, err := h.attendanceService.GetUserAttendanceRange(userID, req.StartDate, req.EndDate)
+	attendances, err := attendanceHandler.attendanceService.GetUserAttendanceRange(userID, req.StartDate, req.EndDate)
 	if err != nil {
 		if err == domain.ErrUserNotFound {
 			NotFoundResponse(c, "User not found")
@@ -213,7 +209,7 @@ func (h *AttendanceHandler) GetUserAttendanceRange(c *gin.Context) {
 
 	attendanceResponses := make([]response.AttendanceResponse, len(attendances))
 	for i, attendance := range attendances {
-		attendanceResponses[i] = h.convertToAttendanceResponse(attendance)
+		attendanceResponses[i] = attendanceHandler.convertToAttendanceResponse(attendance)
 	}
 
 	listResp := response.AttendanceListResponse{
@@ -225,8 +221,8 @@ func (h *AttendanceHandler) GetUserAttendanceRange(c *gin.Context) {
 }
 
 // GetAllAttendance retrieves all attendance records
-func (h *AttendanceHandler) GetAllAttendance(c *gin.Context) {
-	attendances, err := h.attendanceService.GetAllAttendance()
+func (attendanceHandler *AttendanceHandler) GetAllAttendance(c *gin.Context) {
+	attendances, err := attendanceHandler.attendanceService.GetAllAttendance()
 	if err != nil {
 		InternalServerErrorResponse(c, "Failed to get all attendance records: "+err.Error())
 		return
@@ -234,7 +230,7 @@ func (h *AttendanceHandler) GetAllAttendance(c *gin.Context) {
 
 	attendanceResponses := make([]response.AttendanceResponse, len(attendances))
 	for i, attendance := range attendances {
-		attendanceResponses[i] = h.convertToAttendanceResponse(attendance)
+		attendanceResponses[i] = attendanceHandler.convertToAttendanceResponse(attendance)
 	}
 
 	listResp := response.AttendanceListResponse{
@@ -246,7 +242,7 @@ func (h *AttendanceHandler) GetAllAttendance(c *gin.Context) {
 }
 
 // DeleteAttendance deletes an attendance record
-func (h *AttendanceHandler) DeleteAttendance(c *gin.Context) {
+func (attendanceHandler *AttendanceHandler) DeleteAttendance(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -254,9 +250,9 @@ func (h *AttendanceHandler) DeleteAttendance(c *gin.Context) {
 		return
 	}
 
-	err = h.attendanceService.DeleteAttendance(uint(id))
+	err = attendanceHandler.attendanceService.DeleteAttendance(uint(id))
 	if err != nil {
-		if err == domain.ErrAttendanceNotFound {
+		if errors.Is(err, domain.ErrAttendanceNotFound) {
 			NotFoundResponse(c, "Attendance not found")
 		} else {
 			InternalServerErrorResponse(c, "Failed to delete attendance: "+err.Error())
@@ -268,10 +264,10 @@ func (h *AttendanceHandler) DeleteAttendance(c *gin.Context) {
 }
 
 // convertToAttendanceResponse converts domain Attendance to response AttendanceResponse
-func (h *AttendanceHandler) convertToAttendanceResponse(attendance domain.Attendance) response.AttendanceResponse {
+func (attendanceHandler *AttendanceHandler) convertToAttendanceResponse(attendance domain.Attendance) response.AttendanceResponse {
 	breakResponses := make([]response.BreakResponse, len(attendance.Breaks))
 	for i, breakItem := range attendance.Breaks {
-		breakResponses[i] = h.convertToBreakResponse(&breakItem)
+		breakResponses[i] = attendanceHandler.convertToBreakResponse(&breakItem)
 	}
 
 	return response.AttendanceResponse{
@@ -281,15 +277,15 @@ func (h *AttendanceHandler) convertToAttendanceResponse(attendance domain.Attend
 		CheckInTime:    attendance.CheckInTime,
 		CheckOutTime:   attendance.CheckOutTime,
 		TotalWorkHours: attendance.TotalWorkHours,
-		Status:         attendance.GetStatus(),
-		CreatedAt:      attendance.CreatedAt,
-		UpdatedAt:      attendance.UpdatedAt,
-		Breaks:         breakResponses,
+		Status:         attendance.Status,
+		//CreatedAt:      attendance.CreatedAt,
+		//UpdatedAt:      attendance.UpdatedAt,
+		Breaks: breakResponses,
 	}
 }
 
 // convertToBreakResponse converts domain Break to response BreakResponse
-func (h *AttendanceHandler) convertToBreakResponse(breakItem *domain.Break) response.BreakResponse {
+func (attendanceHandler *AttendanceHandler) convertToBreakResponse(breakItem *domain.Break) response.BreakResponse {
 	return response.BreakResponse{
 		ID:           breakItem.ID,
 		AttendanceID: breakItem.AttendanceID,

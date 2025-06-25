@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"hrm/domain"
 	"time"
 )
@@ -24,15 +25,15 @@ func NewAttendanceService(
 }
 
 // CreateAttendance creates a new attendance record for a user on a specific date
-func (s *AttendanceService) CreateAttendance(userID uint, date time.Time) (*domain.Attendance, error) {
+func (attendanceService *AttendanceService) CreateAttendance(userID uint, date time.Time) (*domain.Attendance, error) {
 	// Check if user exists
-	_, err := s.userRepo.GetByID(userID)
+	_, err := attendanceService.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, domain.ErrUserNotFound
 	}
 
 	// Check if attendance already exists for this user and date
-	existingAttendance, err := s.attendanceRepo.GetByUserID(userID, date)
+	existingAttendance, err := attendanceService.attendanceRepo.GetByUserID(userID, date)
 	if err == nil && existingAttendance != nil {
 		return existingAttendance, nil // Return existing attendance
 	}
@@ -41,9 +42,10 @@ func (s *AttendanceService) CreateAttendance(userID uint, date time.Time) (*doma
 	attendance := &domain.Attendance{
 		UserID: userID,
 		Date:   date,
+		Status: "absent",
 	}
 
-	if err := s.attendanceRepo.Create(attendance); err != nil {
+	if err := attendanceService.attendanceRepo.Create(attendance); err != nil {
 		return nil, err
 	}
 
@@ -51,23 +53,24 @@ func (s *AttendanceService) CreateAttendance(userID uint, date time.Time) (*doma
 }
 
 // CheckIn records the check-in time for a user on a specific date
-func (s *AttendanceService) CheckIn(userID uint, date time.Time) (*domain.Attendance, error) {
+func (attendanceService *AttendanceService) CheckIn(userID uint, date time.Time) (*domain.Attendance, error) {
 	// Check if user exists
-	_, err := s.userRepo.GetByID(userID)
+	_, err := attendanceService.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, domain.ErrUserNotFound
 	}
 
 	// Get or create attendance record
-	attendance, err := s.attendanceRepo.GetByUserID(userID, date)
+	attendance, err := attendanceService.attendanceRepo.GetByUserID(userID, date)
 	if err != nil {
-		if err == domain.ErrAttendanceNotFound {
+		if errors.Is(err, domain.ErrAttendanceNotFound) {
 			// Create new attendance record
 			attendance = &domain.Attendance{
 				UserID: userID,
 				Date:   date,
+				Status: "present",
 			}
-			if err := s.attendanceRepo.Create(attendance); err != nil {
+			if err := attendanceService.attendanceRepo.Create(attendance); err != nil {
 				return nil, err
 			}
 		} else {
@@ -85,7 +88,7 @@ func (s *AttendanceService) CheckIn(userID uint, date time.Time) (*domain.Attend
 	attendance.CheckInTime = &now
 
 	// Update attendance record
-	if err := s.attendanceRepo.Update(attendance); err != nil {
+	if err := attendanceService.attendanceRepo.Update(attendance); err != nil {
 		return nil, err
 	}
 
@@ -93,15 +96,15 @@ func (s *AttendanceService) CheckIn(userID uint, date time.Time) (*domain.Attend
 }
 
 // CheckOut records the check-out time for a user on a specific date
-func (s *AttendanceService) CheckOut(userID uint, date time.Time) (*domain.Attendance, error) {
+func (attendanceService *AttendanceService) CheckOut(userID uint, date time.Time) (*domain.Attendance, error) {
 	// Check if user exists
-	_, err := s.userRepo.GetByID(userID)
+	_, err := attendanceService.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, domain.ErrUserNotFound
 	}
 
 	// Get attendance record
-	attendance, err := s.attendanceRepo.GetByUserID(userID, date)
+	attendance, err := attendanceService.attendanceRepo.GetByUserID(userID, date)
 	if err != nil {
 		return nil, err
 	}
@@ -119,12 +122,13 @@ func (s *AttendanceService) CheckOut(userID uint, date time.Time) (*domain.Atten
 	// Set check-out time
 	now := time.Now()
 	attendance.CheckOutTime = &now
+	attendance.Status = attendance.GetStatus()
 
 	// Calculate work hours
 	attendance.CalculateWorkHours()
 
 	// Update attendance record
-	if err := s.attendanceRepo.Update(attendance); err != nil {
+	if err := attendanceService.attendanceRepo.Update(attendance); err != nil {
 		return nil, err
 	}
 
@@ -132,41 +136,41 @@ func (s *AttendanceService) CheckOut(userID uint, date time.Time) (*domain.Atten
 }
 
 // GetAttendanceByID retrieves an attendance record by its ID
-func (s *AttendanceService) GetAttendanceByID(id uint) (*domain.Attendance, error) {
-	return s.attendanceRepo.GetByID(id)
+func (attendanceService *AttendanceService) GetAttendanceByID(id uint) (*domain.Attendance, error) {
+	return attendanceService.attendanceRepo.GetByID(id)
 }
 
 // GetUserAttendance retrieves attendance record for a user on a specific date
-func (s *AttendanceService) GetUserAttendance(userID uint, date time.Time) (*domain.Attendance, error) {
+func (attendanceService *AttendanceService) GetUserAttendance(userID uint, date time.Time) (*domain.Attendance, error) {
 	// Check if user exists
-	_, err := s.userRepo.GetByID(userID)
+	_, err := attendanceService.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, domain.ErrUserNotFound
 	}
 
-	return s.attendanceRepo.GetByUserID(userID, date)
+	return attendanceService.attendanceRepo.GetByUserID(userID, date)
 }
 
 // GetUserAttendanceRange retrieves attendance records for a user within a date range
-func (s *AttendanceService) GetUserAttendanceRange(userID uint, startDate, endDate time.Time) ([]domain.Attendance, error) {
+func (attendanceService *AttendanceService) GetUserAttendanceRange(userID uint, startDate, endDate time.Time) ([]domain.Attendance, error) {
 	// Check if user exists
-	_, err := s.userRepo.GetByID(userID)
+	_, err := attendanceService.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, domain.ErrUserNotFound
 	}
 
-	return s.attendanceRepo.GetByUserIDAndDateRange(userID, startDate, endDate)
+	return attendanceService.attendanceRepo.GetByUserIDAndDateRange(userID, startDate, endDate)
 }
 
 // GetAllAttendance retrieves all attendance records
-func (s *AttendanceService) GetAllAttendance() ([]domain.Attendance, error) {
-	return s.attendanceRepo.GetAll()
+func (attendanceService *AttendanceService) GetAllAttendance() ([]domain.Attendance, error) {
+	return attendanceService.attendanceRepo.GetAll()
 }
 
 // UpdateAttendance modifies an existing attendance record
-func (s *AttendanceService) UpdateAttendance(attendance *domain.Attendance) error {
+func (attendanceService *AttendanceService) UpdateAttendance(attendance *domain.Attendance) error {
 	// Check if attendance exists
-	existingAttendance, err := s.attendanceRepo.GetByID(attendance.ID)
+	existingAttendance, err := attendanceService.attendanceRepo.GetByID(attendance.ID)
 	if err != nil {
 		return err
 	}
@@ -182,16 +186,27 @@ func (s *AttendanceService) UpdateAttendance(attendance *domain.Attendance) erro
 	// Recalculate work hours
 	attendance.CalculateWorkHours()
 
-	return s.attendanceRepo.Update(attendance)
+	return attendanceService.attendanceRepo.Update(attendance)
 }
 
 // DeleteAttendance removes an attendance record
-func (s *AttendanceService) DeleteAttendance(id uint) error {
-	return s.attendanceRepo.Delete(id)
+func (attendanceService *AttendanceService) DeleteAttendance(id uint) error {
+	return attendanceService.attendanceRepo.Delete(id)
 }
 
 // CalculateWorkHours calculates and updates the work hours for an attendance record
-func (s *AttendanceService) CalculateWorkHours(attendance *domain.Attendance) error {
+func (attendanceService *AttendanceService) CalculateWorkHours(attendance *domain.Attendance) error {
 	attendance.CalculateWorkHours()
-	return s.attendanceRepo.Update(attendance)
+	return attendanceService.attendanceRepo.Update(attendance)
+}
+
+// GetLastNAttendanceByUserID retrieves the last N attendance records for a user
+func (attendanceService *AttendanceService) GetLastNAttendanceByUserID(userID uint, limit int) ([]domain.Attendance, error) {
+	// Check if user exists
+	_, err := attendanceService.userRepo.GetByID(userID)
+	if err != nil {
+		return nil, domain.ErrUserNotFound
+	}
+
+	return attendanceService.attendanceRepo.GetLastNByUserID(userID, limit)
 }

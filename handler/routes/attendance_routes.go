@@ -17,7 +17,6 @@ func SetupAttendanceRoutes(router *gin.Engine, attendanceService domain.Attendan
 	attendanceGroup := router.Group("/api/v1/attendance")
 	{
 		// Public routes (no authentication required)
-		attendanceGroup.POST("/checkin", attendanceHandler.CheckIn)
 		attendanceGroup.POST("/checkout", attendanceHandler.CheckOut)
 
 		// Protected routes (require authentication)
@@ -25,6 +24,7 @@ func SetupAttendanceRoutes(router *gin.Engine, attendanceService domain.Attendan
 		protected.Use(middleware.JWTAuthMiddleware())
 		{
 			// Attendance management
+			protected.POST("/checkin", attendanceHandler.CheckIn)
 			protected.POST("/", attendanceHandler.CreateAttendance)
 			protected.GET("/", attendanceHandler.GetAllAttendance)
 			protected.GET("/:id", attendanceHandler.GetAttendanceByID)

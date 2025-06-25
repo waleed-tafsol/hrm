@@ -19,15 +19,17 @@ import (
 // - Formatting HTTP responses
 // - Handling HTTP-specific errors
 type UserHandler struct {
-	userService domain.UserServiceInterface // Dependency on user business logic
+	userService       domain.UserServiceInterface       // Dependency on user business logic
+	attendanceService domain.AttendanceServiceInterface // Dependency on attendance business logic
 }
 
 // NewUserHandler creates a new UserHandler instance.
 // This function acts as a constructor and ensures proper dependency injection.
 // It takes a user service interface, making it easy to test with mock services.
-func NewUserHandler(userService domain.UserServiceInterface) *UserHandler {
+func NewUserHandler(userService domain.UserServiceInterface, attendanceService domain.AttendanceServiceInterface) *UserHandler {
 	return &UserHandler{
-		userService: userService,
+		userService:       userService,
+		attendanceService: attendanceService,
 	}
 }
 
@@ -40,8 +42,8 @@ func NewUserHandler(userService domain.UserServiceInterface) *UserHandler {
 // - User updates (PUT /api/users/:id)
 // - User deletion (DELETE /api/users/:id)
 // - User listing (GET /api/users)
-func SetupUserRoutes(router *gin.Engine, userService domain.UserServiceInterface) {
-	handler := NewUserHandler(userService)
+func SetupUserRoutes(router *gin.Engine, userService domain.UserServiceInterface, attendanceService domain.AttendanceServiceInterface) {
+	handler := NewUserHandler(userService, attendanceService)
 
 	// Group all user routes under /api/users
 	users := router.Group("/api/users")
@@ -142,11 +144,22 @@ func (h *UserHandler) SignIn(c *gin.Context) {
 		return
 	}
 
-	// Step 4: Return success response with user data and token
+	// Step 4: Get last 6 attendance records for the user
+	var lastAttendances []response.AttendanceResponse
+	if h.attendanceService != nil {
+		attendances, err := h.attendanceService.GetLastNAttendanceByUserID(user.ID, 6)
+		if err == nil {
+			lastAttendances = response.ToAttendanceResponseList(attendances)
+		}
+		// If there's an error fetching attendance, we continue with empty list
+	}
+
+	// Step 5: Return success response with user data, token, and last attendance records
 	userResponse := response.ToUserResponse(user)
 	signInResponse := response.SignInResponse{
-		User:  userResponse,
-		Token: token,
+		User:            userResponse,
+		Token:           token,
+		LastAttendances: lastAttendances,
 	}
 	SuccessResponse(c, http.StatusOK, "Sign in successful", signInResponse)
 }

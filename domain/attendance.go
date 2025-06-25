@@ -16,6 +16,7 @@ type Attendance struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Status    string    `json:"-"` // "present", "absent", "late", "early_leave", "completed"
 
 	User   User    `gorm:"foreignKey:UserID" json:"-"`
 	Breaks []Break `gorm:"foreignKey:AttendanceID" json:"breaks,omitempty"`
@@ -32,6 +33,7 @@ type AttendanceRepositoryInterface interface {
 	Delete(id uint) error
 	GetAll() ([]Attendance, error)
 	GetWithBreaks(id uint) (*Attendance, error)
+	GetLastNByUserID(userID uint, limit int) ([]Attendance, error)
 }
 
 // AttendanceServiceInterface defines the contract for attendance business logic
@@ -46,72 +48,7 @@ type AttendanceServiceInterface interface {
 	UpdateAttendance(attendance *Attendance) error
 	DeleteAttendance(id uint) error
 	CalculateWorkHours(attendance *Attendance) error
-}
-
-// AttendanceRequest represents the request structure for attendance operations
-type AttendanceRequest struct {
-	UserID uint      `json:"user_id" binding:"required"`
-	Date   time.Time `json:"date" binding:"required"`
-}
-
-// CheckInRequest represents the request structure for check-in
-type CheckInRequest struct {
-	UserID uint      `json:"user_id" binding:"required"`
-	Date   time.Time `json:"date" binding:"required"`
-}
-
-// CheckOutRequest represents the request structure for check-out
-type CheckOutRequest struct {
-	UserID uint      `json:"user_id" binding:"required"`
-	Date   time.Time `json:"date" binding:"required"`
-}
-
-// AttendanceRangeRequest represents the request structure for getting attendance range
-type AttendanceRangeRequest struct {
-	UserID    uint      `json:"user_id" binding:"required"`
-	StartDate time.Time `json:"start_date" binding:"required"`
-	EndDate   time.Time `json:"end_date" binding:"required"`
-}
-
-// AttendanceUpdateRequest represents the request structure for updating attendance
-type AttendanceUpdateRequest struct {
-	CheckInTime  *time.Time `json:"check_in_time"`
-	CheckOutTime *time.Time `json:"check_out_time"`
-}
-
-// AttendanceResponse represents the response structure for attendance data
-type AttendanceResponse struct {
-	ID             uint            `json:"id"`
-	UserID         uint            `json:"user_id"`
-	Date           time.Time       `json:"date"`
-	CheckInTime    *time.Time      `json:"check_in_time"`
-	CheckOutTime   *time.Time      `json:"check_out_time"`
-	TotalWorkHours float64         `json:"total_work_hours"`
-	Status         string          `json:"status"` // "present", "absent", "late", "early_leave"
-	CreatedAt      time.Time       `json:"created_at"`
-	UpdatedAt      time.Time       `json:"updated_at"`
-	Breaks         []BreakResponse `json:"breaks,omitempty"`
-}
-
-// AttendanceListResponse represents the response structure for a list of attendances
-type AttendanceListResponse struct {
-	Attendances []AttendanceResponse `json:"attendances"`
-	Total       int                  `json:"total"`
-}
-
-// CheckInResponse represents the response structure for check-in operation
-type CheckInResponse struct {
-	Attendance  AttendanceResponse `json:"attendance"`
-	Message     string             `json:"message"`
-	CheckInTime time.Time          `json:"check_in_time"`
-}
-
-// CheckOutResponse represents the response structure for check-out operation
-type CheckOutResponse struct {
-	Attendance     AttendanceResponse `json:"attendance"`
-	Message        string             `json:"message"`
-	CheckOutTime   time.Time          `json:"check_out_time"`
-	TotalWorkHours float64            `json:"total_work_hours"`
+	GetLastNAttendanceByUserID(userID uint, limit int) ([]Attendance, error)
 }
 
 // Domain-specific errors for attendance operations

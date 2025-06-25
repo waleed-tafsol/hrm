@@ -22,8 +22,9 @@ type SignUpResponse struct {
 
 // SignInResponse represents the response model for user authentication
 type SignInResponse struct {
-	User  UserResponse `json:"user"`
-	Token string       `json:"token"`
+	User            UserResponse         `json:"user"`
+	Token           string               `json:"token"`
+	LastAttendances []AttendanceResponse `json:"last_attendances"`
 }
 
 // GetUserResponse represents the response model for getting a user

@@ -165,3 +165,20 @@ func (r *AttendanceRepository) GetWithBreaks(id uint) (*domain.Attendance, error
 
 	return &attendance, nil
 }
+
+// GetLastNByUserID retrieves the last N attendance records for a user
+func (r *AttendanceRepository) GetLastNByUserID(userID uint, limit int) ([]domain.Attendance, error) {
+	var attendances []domain.Attendance
+
+	err := r.db.Where("user_id = ?", userID).
+		Preload("Breaks").
+		Order("date DESC").
+		Limit(limit).
+		Find(&attendances).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return attendances, nil
+}

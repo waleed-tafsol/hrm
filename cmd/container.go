@@ -80,7 +80,7 @@ func (c *Container) SetupRoutes(router *gin.Engine) {
 
 	// Step 2: Setup user management routes
 	// These routes handle all user-related operations (CRUD, authentication)
-	routes.SetupUserRoutes(router, c.UserService)
+	routes.SetupUserRoutes(router, c.UserService, c.AttendanceService)
 
 	// Step 3: Setup attendance management routes
 	// These routes handle all attendance-related operations (check-in, check-out)

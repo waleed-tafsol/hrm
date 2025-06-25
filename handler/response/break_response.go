@@ -1,6 +1,7 @@
 package response
 
 import (
+	"hrm/domain"
 	"time"
 )
 
@@ -48,4 +49,18 @@ type BreakDetailResponse struct {
 	UserID        uint          `json:"user_id"`
 	Date          time.Time     `json:"date"`
 	TotalDuration float64       `json:"total_duration"`
+}
+
+// ToBreakResponse converts a domain Break to BreakResponse
+func ToBreakResponse(breakItem *domain.Break) BreakResponse {
+	return BreakResponse{
+		ID:           breakItem.ID,
+		AttendanceID: breakItem.AttendanceID,
+		StartTime:    breakItem.StartTime,
+		EndTime:      breakItem.EndTime,
+		Duration:     breakItem.Duration,
+		Reason:       breakItem.Reason,
+		CreatedAt:    breakItem.CreatedAt,
+		UpdatedAt:    breakItem.UpdatedAt,
+	}
 }

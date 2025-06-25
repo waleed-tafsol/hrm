@@ -8,8 +8,8 @@ import (
 )
 
 // SetupUserRoutes configures all user-related routes
-func SetupUserRoutes(router *gin.Engine, userService domain.UserServiceInterface) {
-	handler.SetupUserRoutes(router, userService)
+func SetupUserRoutes(router *gin.Engine, userService domain.UserServiceInterface, attendanceService domain.AttendanceServiceInterface) {
+	handler.SetupUserRoutes(router, userService, attendanceService)
 }
 
 // SetupHealthRoutes configures health check routes
