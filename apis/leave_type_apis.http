@@ -1,0 +1,147 @@
+### HRM Leave Type API Test Suite
+### Base URL: {{base_url}}
+### Environment: Uses variables from apis/http-client.env.json
+
+### 1. Health Check
+GET {{base_url}}/health
+
+### 2. Get All Leave Types
+GET {{base_url}}/api/leave-types
+
+### 3. Get Active Leave Types
+GET {{base_url}}/api/leave-types/active
+
+### 4. Get Leave Types with Usage Stats
+GET {{base_url}}/api/leave-types/stats
+
+### 5. Get Leave Type by ID
+GET {{base_url}}/api/leave-types/1
+
+### 6. Get Leave Type by Type - Sick
+GET {{base_url}}/api/leave-types/type/sick
+
+### 7. Get Leave Type by Type - Vacation
+GET {{base_url}}/api/leave-types/type/vacation
+
+### 8. Get Leave Type by Type - Personal
+GET {{base_url}}/api/leave-types/type/personal
+
+### 9. Get Leave Type by Type - Maternity
+GET {{base_url}}/api/leave-types/type/maternity
+
+### 10. Get Leave Type by Type - Paternity
+GET {{base_url}}/api/leave-types/type/paternity
+
+### 11. Get Leave Type by Type - Other
+GET {{base_url}}/api/leave-types/type/other
+
+### 12. Create Leave Type - Sick
+POST {{base_url}}/api/leave-types
+Content-Type: application/json
+
+{
+  "type": "sick",
+  "name": "Sick Leave",
+  "description": "Leave for medical reasons and illness",
+  "default_days_per_year": 10,
+  "is_active": true,
+  "requires_approval": true,
+  "color": "#dc3545",
+  "icon": "medical-bag"
+}
+
+### 13. Create Leave Type - Vacation
+POST {{base_url}}/api/leave-types
+Content-Type: application/json
+
+{
+  "type": "vacation",
+  "name": "Vacation Leave",
+  "description": "Annual vacation leave for rest and recreation",
+  "default_days_per_year": 20,
+  "is_active": true,
+  "requires_approval": true,
+  "color": "#28a745",
+  "icon": "beach"
+}
+
+### 14. Create Leave Type - Personal
+POST {{base_url}}/api/leave-types
+Content-Type: application/json
+
+{
+  "type": "personal",
+  "name": "Personal Leave",
+  "description": "Personal time off for appointments and personal matters",
+  "default_days_per_year": 5,
+  "is_active": true,
+  "requires_approval": true,
+  "color": "#ffc107",
+  "icon": "calendar"
+}
+
+### 15. Create Leave Type - Maternity
+POST {{base_url}}/api/leave-types
+Content-Type: application/json
+
+{
+  "type": "maternity",
+  "name": "Maternity Leave",
+  "description": "Leave for expecting mothers",
+  "default_days_per_year": 90,
+  "is_active": true,
+  "requires_approval": true,
+  "color": "#e83e8c",
+  "icon": "baby"
+}
+
+### 16. Create Leave Type - Paternity
+POST {{base_url}}/api/leave-types
+Content-Type: application/json
+
+{
+  "type": "paternity",
+  "name": "Paternity Leave",
+  "description": "Leave for new fathers",
+  "default_days_per_year": 14,
+  "is_active": true,
+  "requires_approval": true,
+  "color": "#17a2b8",
+  "icon": "family"
+}
+
+### 17. Update Leave Type
+PUT {{base_url}}/api/leave-types/1
+Content-Type: application/json
+
+{
+  "type": "sick",
+  "name": "Sick Leave (Updated)",
+  "description": "Updated description for sick leave",
+  "default_days_per_year": 12,
+  "is_active": true,
+  "requires_approval": true,
+  "color": "#dc3545",
+  "icon": "medical-bag"
+}
+
+### 18. Delete Leave Type
+DELETE {{base_url}}/api/leave-types/1
+
+### 19. Create Leave Type - Other
+POST {{base_url}}/api/leave-types
+Content-Type: application/json
+
+{
+  "type": "other",
+  "name": "Other Leave",
+  "description": "Miscellaneous leave types",
+  "default_days_per_year": 3,
+  "is_active": true,
+  "requires_approval": true,
+  "color": "#6c757d",
+  "icon": "dots-horizontal"
+}
+
+### 20. Get All Leave Types (After Creation)
+GET {{base_url}}/api/leave-types 

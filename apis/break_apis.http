@@ -1,0 +1,79 @@
+### HRM Break API Test Suite
+### Base URL: {{base_url}}
+### Environment: Uses variables from apis/http-client.env.json
+
+### 1. Health Check
+GET {{base_url}}/health
+
+### 2. Add Break (requires JWT authentication)
+POST {{base_url}}/api/v1/breaks/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "attendance_id": 1,
+  "start_time": "2024-01-15T12:00:00Z",
+  "reason": "Lunch break"
+}
+
+### 3. Add Another Break
+POST {{base_url}}/api/v1/breaks/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "attendance_id": 1,
+  "start_time": "2024-01-15T15:30:00Z",
+  "reason": "Coffee break"
+}
+
+### 4. Get All Breaks
+GET {{base_url}}/api/v1/breaks/
+Authorization: Bearer {{token}}
+
+### 5. Get Break by ID
+GET {{base_url}}/api/v1/breaks/1
+Authorization: Bearer {{token}}
+
+### 6. Get Breaks by Attendance ID
+GET {{base_url}}/api/v1/breaks/attendance/1
+Authorization: Bearer {{token}}
+
+### 7. End Break
+PUT {{base_url}}/api/v1/breaks/end
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "break_id": 1,
+  "end_time": "2024-01-15T13:00:00Z"
+}
+
+### 8. End Second Break
+PUT {{base_url}}/api/v1/breaks/end
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "break_id": 2,
+  "end_time": "2024-01-15T16:00:00Z"
+}
+
+### 9. Delete Break
+DELETE {{base_url}}/api/v1/breaks/1
+Authorization: Bearer {{token}}
+
+### 10. Add Break for Different Attendance
+POST {{base_url}}/api/v1/breaks/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "attendance_id": 2,
+  "start_time": "2024-01-16T12:30:00Z",
+  "reason": "Lunch break"
+}
+
+### 11. Get Breaks by Attendance ID (Different Attendance)
+GET {{base_url}}/api/v1/breaks/attendance/2
+Authorization: Bearer {{token}} 

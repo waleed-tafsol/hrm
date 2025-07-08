@@ -3,6 +3,7 @@ package main
 import (
 	"hrm/config"
 	"hrm/domain"
+	"hrm/handler"
 	"hrm/handler/routes"
 	"hrm/repository"
 	"hrm/usecase"
@@ -23,8 +24,12 @@ type Container struct {
 	UserService       domain.UserServiceInterface          // User business logic layer
 	AttendanceRepo    domain.AttendanceRepositoryInterface // Attendance data access layer
 	BreakRepo         domain.BreakRepositoryInterface      // Break data access layer
+	LeaveRepo         domain.LeaveRepositoryInterface      // Leave data access layer
+	LeaveTypeRepo     domain.LeaveTypeRepositoryInterface  // Leave type data access layer
 	AttendanceService domain.AttendanceServiceInterface    // Attendance business logic layer
 	BreakService      domain.BreakServiceInterface         // Break business logic layer
+	LeaveService      domain.LeaveServiceInterface         // Leave business logic layer
+	LeaveTypeService  domain.LeaveTypeServiceInterface     // Leave type business logic layer
 }
 
 // NewContainer creates and initializes all application dependencies.
@@ -44,12 +49,16 @@ func NewContainer() *Container {
 	userRepo := repository.NewUserRepository(cfg.DB)
 	attendanceRepo := repository.NewAttendanceRepository(cfg.DB)
 	breakRepo := repository.NewBreakRepository(cfg.DB)
+	leaveRepo := repository.NewLeaveRepository(cfg.DB)
+	leaveTypeRepo := repository.NewLeaveTypeRepository(cfg.DB)
 
 	// Step 3: Initialize services (Business Logic Layer)
 	// Services contain business logic and orchestrate operations between repositories
 	userService := usecase.NewUserService(userRepo)
 	attendanceService := usecase.NewAttendanceService(attendanceRepo, userRepo)
 	breakService := usecase.NewBreakService(breakRepo, attendanceRepo)
+	leaveService := usecase.NewLeaveService(leaveRepo, userRepo)
+	leaveTypeService := usecase.NewLeaveTypeService(leaveTypeRepo)
 
 	// Step 4: Create and return the container with all dependencies
 	return &Container{
@@ -58,8 +67,12 @@ func NewContainer() *Container {
 		UserService:       userService,
 		AttendanceRepo:    attendanceRepo,
 		BreakRepo:         breakRepo,
+		LeaveRepo:         leaveRepo,
+		LeaveTypeRepo:     leaveTypeRepo,
 		AttendanceService: attendanceService,
 		BreakService:      breakService,
+		LeaveService:      leaveService,
+		LeaveTypeService:  leaveTypeService,
 	}
 }
 
@@ -70,6 +83,8 @@ func NewContainer() *Container {
 // - User management routes
 // - Attendance management routes
 // - Break management routes
+// - Leave management routes
+// - Leave type management routes
 //
 // Parameters:
 //   - router: The Gin router instance to configure
@@ -89,4 +104,13 @@ func (c *Container) SetupRoutes(router *gin.Engine) {
 	// Step 4: Setup break management routes
 	// These routes handle all break-related operations (add, end, manage breaks)
 	routes.SetupBreakRoutes(router, c.BreakService)
+
+	// Step 5: Setup leave management routes
+	// These routes handle all leave-related operations (create, approve, reject, etc.)
+	routes.SetupLeaveRoutes(router, c.LeaveService, c.UserService)
+
+	// Step 6: Setup leave type management routes
+	// These routes handle all leave type-related operations (CRUD for leave types)
+	leaveTypeHandler := handler.NewLeaveTypeHandler(c.LeaveTypeService)
+	routes.SetupLeaveTypeRoutes(router, leaveTypeHandler)
 }

@@ -1,0 +1,52 @@
+### HRM User API Test Suite
+### Base URL: {{base_url}}
+### Environment: Uses variables from apis/http-client.env.json
+
+### Environment Configuration
+### This file uses variables from apis/http-client.env.json
+### Make sure to run the signin request first to get a valid token
+
+### 1. Health Check
+GET {{base_url}}/health
+
+### 2. User Registration (Sign Up)
+POST {{base_url}}/api/users/signup
+Content-Type: application/json
+
+{
+  "name": "Alice Example",
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### 3. User Login (Sign In) - Run this first to get a token
+POST {{base_url}}/api/users/signin
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### 4. Get Current User Profile (JWT required)
+GET {{base_url}}/api/users/me
+Authorization: Bearer {{token}}
+
+### 5. Get User by ID
+GET {{base_url}}/api/users/1
+
+### 6. Update User by ID
+PUT {{base_url}}/api/users/1
+Content-Type: application/json
+
+{
+  "name": "Alice Updated",
+  "email": "alice.updated@example.com",
+  "password": "newpassword456"
+}
+
+### 7. Delete User by ID
+DELETE {{base_url}}/api/users/1
+
+### 8. List Users (pagination)
+GET {{base_url}}/api/users/?limit=10&offset=0

@@ -1,0 +1,77 @@
+### HRM Attendance API Test Suite
+### Base URL: {{base_url}}
+### Environment: Uses variables from apis/http-client.env.json
+
+### 1. Health Check
+GET {{base_url}}/health
+
+### 2. Check In (requires JWT authentication)
+POST {{base_url}}/api/v1/attendance/checkin
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "date": "2024-01-15T09:00:00Z"
+}
+
+### 3. Check Out (requires JWT authentication)
+POST {{base_url}}/api/v1/attendance/checkout
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "date": "2024-01-15T17:00:00Z"
+}
+
+### 4. Create Attendance Record
+POST {{base_url}}/api/v1/attendance/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "date": "2024-01-16T08:30:00Z"
+}
+
+### 5. Get All Attendance Records
+GET {{base_url}}/api/v1/attendance/
+Authorization: Bearer {{token}}
+
+### 6. Get Attendance by ID
+GET {{base_url}}/api/v1/attendance/1
+Authorization: Bearer {{token}}
+
+### 7. Delete Attendance Record
+DELETE {{base_url}}/api/v1/attendance/1
+Authorization: Bearer {{token}}
+
+### 8. Get User Attendance Records
+GET {{base_url}}/api/v1/attendance/user/1
+Authorization: Bearer {{token}}
+
+### 9. Get User Attendance by Date Range
+POST {{base_url}}/api/v1/attendance/user/range
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-01-31T23:59:59Z"
+}
+
+### 10. Check In - Different Date
+POST {{base_url}}/api/v1/attendance/checkin
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "date": "2024-01-17T08:45:00Z"
+}
+
+### 11. Check Out - Same Day
+POST {{base_url}}/api/v1/attendance/checkout
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "date": "2024-01-17T18:15:00Z"
+} 

@@ -1,0 +1,111 @@
+### HRM Leave API Test Suite
+### Base URL: {{base_url}}
+### Environment: Uses variables from apis/http-client.env.json
+
+### 1. Health Check
+GET {{base_url}}/health
+
+### 2. Create Leave Request (requires JWT authentication)
+POST {{base_url}}/api/leaves/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": {
+    "type": "vacation"
+  },
+  "start_date": "2024-02-15T00:00:00Z",
+  "end_date": "2024-02-17T00:00:00Z",
+  "reason": "Family vacation",
+  "description": "Taking time off to spend with family"
+}
+
+### 3. Create Sick Leave Request
+POST {{base_url}}/api/leaves/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": {
+    "type": "sick"
+  },
+  "start_date": "2024-02-20T00:00:00Z",
+  "end_date": "2024-02-21T00:00:00Z",
+  "reason": "Not feeling well",
+  "description": "Medical appointment and rest"
+}
+
+### 4. Get All Leaves
+GET {{base_url}}/api/leaves/
+Authorization: Bearer {{token}}
+
+### 5. Get Pending Leaves
+GET {{base_url}}/api/leaves/pending
+Authorization: Bearer {{token}}
+
+### 6. Get Leave by ID
+GET {{base_url}}/api/leaves/1
+Authorization: Bearer {{token}}
+
+### 7. Update Leave
+PUT {{base_url}}/api/leaves/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": {
+    "type": "vacation"
+  },
+  "start_date": "2024-02-15T00:00:00Z",
+  "end_date": "2024-02-18T00:00:00Z",
+  "reason": "Extended family vacation",
+  "description": "Taking extra day for travel"
+}
+
+### 8. Approve Leave (requires manager permissions)
+POST {{base_url}}/api/leaves/1/approve
+Authorization: Bearer {{token}}
+
+### 9. Reject Leave (requires manager permissions)
+POST {{base_url}}/api/leaves/2/reject
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "reject_reason": "Insufficient notice period"
+}
+
+### 10. Cancel Leave
+POST {{base_url}}/api/leaves/1/cancel
+Authorization: Bearer {{token}}
+
+### 11. Get User Leaves
+GET {{base_url}}/api/leaves/user/1
+Authorization: Bearer {{token}}
+
+### 12. Get User Leaves by Date Range
+GET {{base_url}}/api/leaves/user/1/range?start_date=2024-02-01&end_date=2024-02-29
+Authorization: Bearer {{token}}
+
+### 13. Get User Leave Balance
+GET {{base_url}}/api/leaves/user/1/balance?year=2024
+Authorization: Bearer {{token}}
+
+### 14. Delete Leave
+DELETE {{base_url}}/api/leaves/2
+Authorization: Bearer {{token}}
+
+### 15. Create Personal Leave Request
+POST {{base_url}}/api/leaves/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": {
+    "type": "personal"
+  },
+  "start_date": "2024-03-01T00:00:00Z",
+  "end_date": "2024-03-01T00:00:00Z",
+  "reason": "Personal appointment",
+  "description": "Doctor appointment"
+} 
